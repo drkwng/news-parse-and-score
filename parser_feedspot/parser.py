@@ -1,6 +1,8 @@
 
 import logging
+
 from requests_html import HTMLSession
+from concurrent.futures import ThreadPoolExecutor
 
 
 def crawl_list_dirs(url):
@@ -21,30 +23,30 @@ def crawl_dir(url):
             r = session.get(url)
 
             dir_name = r.html.xpath("//h2[@id='fsbhead']/text()")[0].strip(' News Websites')
-
             data = {
                 'dir_name': dir_name,
                 'dir_data': []
             }
 
             dir_list = r.html.xpath("//*[contains(@class, 'trow-wrap')]")
-            for elem in dir_list:
-                website = elem.xpath("//a[@class='ext']/@href")[0]
-                geo = elem.xpath("//span[@class='location_new']/text()")[0].split(',')[0]
-                metrics = []
+
+            for num, elem in enumerate(dir_list):
+                name = elem.element.xpath("//a[@class='tlink']/text()")[num-1]
+                website = elem.element.xpath("//a[@class='ext']/@href")[num-1]
+                geo = elem.element.xpath("//span[@class='location_new']/text()")[num-1]
 
                 data['dir_data'].append(
                     {
+                        'name': name,
                         'website': website,
                         'geo': geo,
-                        'metrics': metrics
                     }
                 )
+
             return data
 
         except Exception as err:
             logging.debug('crawl_dir(): ', err)
-
 
 
 def worker():
@@ -56,11 +58,13 @@ def worker():
 
 
 if __name__ == "__main__":
+    from pprint import pprint
+
     # url = 'https://blog.feedspot.com/new_york_news_websites/'
     url = 'https://blog.feedspot.com/san_diego_news_websites/'
 
     # url = "https://blog.feedspot.com/category/usa-news-websites/"
     # crawl_list_dirs(url)
 
-    data = crawl_dir(url)
-    print(data)
+    dir_list = crawl_dir(url)
+    pprint(dir_list)
