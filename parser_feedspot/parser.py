@@ -1,23 +1,30 @@
 
 import logging
+from time import sleep
 
 from requests_html import HTMLSession
-from concurrent.futures import ThreadPoolExecutor
 
 
 def crawl_list_dirs(url):
     with HTMLSession() as session:
         try:
             r = session.get(url)
+
             links = r.html.xpath("//table[@class='table']/*/tr/td/a/@href")
-            abs_links = ['https://blog.feedspot.com' + link for link in links]
+            abs_links = []
+            for link in links:
+                if 'https' not in link:
+                    abs_links.append('https://blog.feedspot.com' + link)
+                else:
+                    abs_links.append(link)
+
             return abs_links
 
         except Exception as err:
             logging.debug('crawl_list_dirs(): ', err)
 
 
-def crawl_dir(url):
+def scrape_list_dirs(url):
     with HTMLSession() as session:
         try:
             r = session.get(url)
@@ -42,19 +49,34 @@ def crawl_dir(url):
                         'geo': geo,
                     }
                 )
-
+            print(data)
             return data
 
         except Exception as err:
             logging.debug('crawl_dir(): ', err)
 
 
-def worker():
-    # TODO: Разово запускаємо скрипт на стартовий урл.
-    #  Після проходимося по урл зі списку,
-    #  доти на виході список не порожній,
-    #  інакше запускаємо функцію краулінга каталогу
-    pass
+def worker(start_url):
+    to_crawl = crawl_list_dirs(start_url)
+    data = []
+
+    while len(to_crawl) > 0:
+        for element in to_crawl:
+            if '/category/' in element:
+                print(f'crawl - {element}')
+                to_crawl += crawl_list_dirs(element)
+                to_crawl.remove(element)
+                print(f'{len(to_crawl)} left')
+                sleep(2)
+
+            else:
+                print(f'scrape - {element}')
+                data.append(scrape_list_dirs(element))
+                to_crawl.remove(element)
+                print(f'{len(to_crawl)} left')
+                sleep(2)
+
+    return data
 
 
 if __name__ == "__main__":
@@ -62,9 +84,14 @@ if __name__ == "__main__":
 
     # url = 'https://blog.feedspot.com/new_york_news_websites/'
     url = 'https://blog.feedspot.com/san_diego_news_websites/'
+    # dir_list = scrape_list_dirs(url)
+    # pprint(dir_list)
 
-    # url = "https://blog.feedspot.com/category/usa-news-websites/"
-    # crawl_list_dirs(url)
+    # start_url = "https://blog.feedspot.com/category/usa-news-websites/"
+    start_url = 'https://blog.feedspot.com/category/california-news-websites?_src=categorypage'
+    # pprint(crawl_list_dirs(start_url))
 
-    dir_list = crawl_dir(url)
-    pprint(dir_list)
+    worker(start_url)
+
+
+
