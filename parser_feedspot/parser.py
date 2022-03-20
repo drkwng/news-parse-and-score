@@ -1,6 +1,9 @@
 
 import logging
 from time import sleep
+from threading import Thread, Lock
+from concurrent.futures import ThreadPoolExecutor
+from queue import Queue
 
 from requests_html import HTMLSession
 
@@ -17,7 +20,6 @@ def crawl_list_dirs(url):
                     abs_links.append('https://blog.feedspot.com' + link)
                 else:
                     abs_links.append(link)
-
             return abs_links
 
         except Exception as err:
@@ -57,24 +59,19 @@ def scrape_list_dirs(url):
 
 
 def worker(start_url):
-    to_crawl = crawl_list_dirs(start_url)
+    q = Queue()
+    [q.put(i) for i in crawl_list_dirs(start_url)]
+
     data = []
 
-    while len(to_crawl) > 0:
-        for element in to_crawl:
-            if '/category/' in element:
-                print(f'crawl - {element}')
-                to_crawl += crawl_list_dirs(element)
-                to_crawl.remove(element)
-                print(f'{len(to_crawl)} left')
-                sleep(2)
-
-            else:
-                print(f'scrape - {element}')
-                data.append(scrape_list_dirs(element))
-                to_crawl.remove(element)
-                print(f'{len(to_crawl)} left')
-                sleep(2)
+    while not q.empty():
+        element = q.get()
+        if '/category/' in element:
+            [q.put(i) for i in crawl_list_dirs(element)]
+            sleep(2)
+        else:
+            data.append(scrape_list_dirs(element))
+            sleep(2)
 
     return data
 
@@ -82,15 +79,11 @@ def worker(start_url):
 if __name__ == "__main__":
     from pprint import pprint
 
-    # url = 'https://blog.feedspot.com/new_york_news_websites/'
     url = 'https://blog.feedspot.com/san_diego_news_websites/'
     # dir_list = scrape_list_dirs(url)
     # pprint(dir_list)
 
-    # start_url = "https://blog.feedspot.com/category/usa-news-websites/"
-    start_url = 'https://blog.feedspot.com/category/california-news-websites?_src=categorypage'
-    # pprint(crawl_list_dirs(start_url))
-
+    start_url = "https://blog.feedspot.com/category/usa-news-websites/"
     worker(start_url)
 
 
