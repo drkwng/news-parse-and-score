@@ -48,18 +48,20 @@ class ParserFeedspot():
 
             dir_list = tree.xpath("//*[contains(@class, 'trow-wrap')]")
             for num, elem in enumerate(dir_list):
-                name = elem.xpath(f"(//a[@class='tlink']/text())[{num-1}]")[0]
-                website = elem.xpath(f"(//a[@class='ext']/@href)[{num-1}]")[0]
-                geo = elem.xpath(f"(//span[@class='location_new']/text())[{num-1}]")[0]
+                # Check on empty elements (hidden)
+                if len(elem.xpath(f"(//a[@class='tlink']/text())[{num-1}]")) > 0:
+                    name = elem.xpath(f"(//a[@class='tlink']/text())[{num-1}]")[0]
+                    website = elem.xpath(f"(//a[@class='ext']/@href)[{num-1}]")[0]
+                    geo = elem.xpath(f"(//span[@class='location_new']/text())[{num-1}]")[0]
 
-                data.append(
-                    {
-                        'name': name,
-                        'website': website,
-                        'geo': geo,
-                        'cat_seen': dir_name
-                    }
-                )
+                    data.append(
+                        {
+                            'name': name,
+                            'website': website,
+                            'geo': geo,
+                            'cat_seen': dir_name
+                        }
+                    )
             return data
 
         except Exception as err:
