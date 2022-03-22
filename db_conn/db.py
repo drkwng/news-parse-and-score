@@ -1,65 +1,53 @@
+import logging
 
 import pymongo
-
 from bson.json_util import dumps
 import json
 
-import logging
 
+class MongoConnect:
+    def __init__(self, _host, _port, database, collection):
+        client = pymongo.MongoClient(f'mongodb://{_host}:{_port}/')
+        db = client[database]
+        self.website = db[collection]
 
-def update_db(host, port, data):
-    """
-    Update DB
-    :param host: Hostname (e.g. localhost)
-    :type host: str
-    :param port: Port (e.g. 27017)
-    :type port: str
-    :param data:
-    :type data: dict
-    :return:
-    :rtype:
-    """
-    try:
-        client = pymongo.MongoClient(f'mongodb://{host}:{port}/')
+    def send_to_db(self, data):
+        """
+        Insert new data into MongoDB collection
+        :param data:
+        :type data: dict
+        :return:
+        :rtype:
+        """
+        try:
+            self.website.insert_one(data).inserted_id
 
-        db = client.admin
-        city = db.cities
+        except Exception as err:
+            logging.debug('db send_to_db() func error: ', err)
 
-        city_id = city.insert_one(data).inserted_id
-        logging.info(f"Success! City {data['city']} added, id {city_id}")
+    def dump_db(self):
+        """
+        Makes JSON dump of MongoDB collection
+        :return:
+        :rtype:
+        """
+        try:
+            cursor = self.website.find({})
+            with open('website_data.json', 'w') as file:
+                json.dump(json.loads(dumps(cursor)), file)
+            print('Dump succeed!')
 
-    except Exception as err:
-        logging.debug('db update_db() func error: ', err)
+        except Exception as err:
+            logging.debug('db dump_db() func error: ', err)
 
-
-def dump_db(host, port):
-    """
-    Dump DB data into JSON
-    :param host: Hostname (e.g. localhost)
-    :type host: str
-    :param port: Port (e.g. 27017)
-    :type port: str
-    :return:
-    :rtype:
-    """
-    try:
-        client = pymongo.MongoClient(f'mongodb://{host}:{port}/')
-        db = client.admin
-        collection = db.cities
-        cursor = collection.find({})
-        with open('city_data.json', 'w') as file:
-            json.dump(json.loads(dumps(cursor)), file)
-        print('Dump succeed!')
-
-    except Exception as err:
-        logging.debug('db dump_db() func error: ', err)
-
-
-if __name__ == "__main__":
-    test_data = {
-        'field1': 'value1',
-        'field2': 'value2',
-        'field3': ['val1', 'val2', 'val3']
-    }
-
-    update_db('localhost', '27017', test_data)
+    def worker(self, cor):
+        """
+        Gets parser worker coroutine and sends data into database
+        :param cor: coroutine
+        :type cor: generator
+        :return:
+        :rtype:
+        """
+        for data in cor:
+            for elem in data:
+                self.send_to_db(elem)
