@@ -121,6 +121,7 @@ class ParserFeedspot:
                         item['available'] = executor.submit(self.check_avail_website,
                                                             item['website']).result()
 
+                # return scraped data to send it to db
                 yield data
 
             sleep(randint(2, 4))

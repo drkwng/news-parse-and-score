@@ -17,7 +17,8 @@ if __name__ == "__main__":
 
     parser = ParserFeedspot()
     parse_worker = parser.worker(start_url)
-
     db_connect.worker(parse_worker)
+
+    # Dump data
     db_connect.dump_db()
 
