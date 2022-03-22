@@ -51,7 +51,7 @@ def main():
 
     print('Start getting data from Value SERP API. Please wait...\n')
 
-    api_worker = init_api.worker(dump_data[:3], query)
+    api_worker = init_api.worker(dump_data, query)
     for elem in api_worker:
         del elem['_id']
         db_connect3.insert_one(elem)

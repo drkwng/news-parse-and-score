@@ -53,7 +53,8 @@ class SerpAPI:
         """
         # Fill the queue
         for elem in _data:
-            self.q.put(elem)
+            if elem['available']:
+                self.q.put(elem)
 
         while not self.q.empty():
             element = self.q.get()
