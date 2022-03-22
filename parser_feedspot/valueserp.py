@@ -1,32 +1,61 @@
+import logging
+
+from queue import Queue
 import requests
 
 
 class SerpAPI:
-    def __init__(self, key):
-        self.key = key
+    def __init__(self, _api_key, _search_type, _location):
+        self.api_key = _api_key
+        self.search_type = _search_type
+        self.location = _location
+        self.q = Queue()
 
-    def get_search_data(self, url, keyword)
-        query = f"site:url keyword"
-        params = {
-            'api_key': self.key,
-            'q': query,
-            'search_type': 'news'
-        }
+    def get_search_data(self, _query):
+        try:
+            params = {
+                'api_key': self.api_key,
+                'q': _query,
+                'search_type': self.search_type,
+                'location': self.location
+            }
+            api_result = requests.get('https://api.valueserp.com/search', params)
+            return api_result.json()
+
+        except Exception as err:
+            logging.debug(f'get_search_data({query}): {err}')
+            return None
+
+    def worker(self, _data, _query):
+        self.q.put(_data)
+
+        while not self.q.empty():
+            element = self.q.get()
+            website = element['website']
+            serp_data = self.get_search_data(
+                f'site:{website} {_query}')
+            element['serp_data'] = {
+                query: serp_data
+            }
+            print(f'{website} - checked')
+            # Return scraped data to send it to db
+            yield element
 
 
 if __name__ == "__main__":
-    url = 'https://us.cnn.com/'
+    api_key = '68375F40DAB2479E9678F9EAB68E18B0'
+    search_type = 'news'
+    location = 'United States'
 
-    import requests
-
-    # set up the request parameters
-    params = {
-        'api_key': 'demo',
-        'q': 'pizza'
+    data = {
+        "_id": {"$oid": "6239a9a6a51aec6e8d8d1462"},
+        "name": "CNN - Breaking News, Latest News and Videos",
+        "website": "https://us.cnn.com/",
+        "geo": "US",
+        "cat_seen": "USA",
+        "available": True
     }
+    query = 'ukraine'
 
-    # make the http GET request to VALUE SERP
-    api_result = requests.get('https://api.valueserp.com/search', params)
-
-    # print the JSON response from VALUE SERP
-    print(api_result.json())
+    init_api = SerpAPI(api_key, search_type, location)
+    print([work for work in init_api.worker(data, query)])

@@ -25,6 +25,3 @@ if __name__ == "__main__":
 
     # Dump data
     dump_data = db_connect.dump_db()
-    breakpoint()
-
-    # TODO: забираємо усі елементи
