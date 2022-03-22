@@ -6,12 +6,28 @@ import requests
 
 class SerpAPI:
     def __init__(self, _api_key, _search_type, _location):
+        """
+        https://www.valueserp.com/docs/search-api/searches/common
+        :param _api_key: API Key
+        :type _api_key: str
+        :param _search_type: optional (e.g. 'news')
+        :type _search_type: str
+        :param _location: optional (e.g. 'United States')
+        :type _location: str
+        """
         self.api_key = _api_key
         self.search_type = _search_type
         self.location = _location
         self.q = Queue()
 
     def get_search_data(self, _query):
+        """
+        Send request to Value SERP API
+        :param _query:
+        :type _query:
+        :return:
+        :rtype: dict
+        """
         try:
             params = {
                 'api_key': self.api_key,
@@ -27,6 +43,14 @@ class SerpAPI:
             return None
 
     def worker(self, _data, _query):
+        """
+        :param _data: JSON dump from database
+        :type _data: dict
+        :param _query: keyword
+        :type _query: str
+        :return: Dict element with serp data
+        :rtype: generator
+        """
         self.q.put(_data)
 
         while not self.q.empty():
