@@ -9,7 +9,7 @@ class MongoConnect:
     def __init__(self, _host, _port, database, collection):
         client = pymongo.MongoClient(f'mongodb://{_host}:{_port}/')
         db = client[database]
-        self.website = db[collection]
+        self.collection = db[collection]
 
     def send_to_db(self, data):
         """
@@ -20,7 +20,7 @@ class MongoConnect:
         :rtype:
         """
         try:
-            self.website.insert_one(data).inserted_id
+            self.collection.insert_one(data).inserted_id
 
         except Exception as err:
             logging.debug('db send_to_db() func error: ', err)
@@ -32,10 +32,12 @@ class MongoConnect:
         :rtype:
         """
         try:
-            cursor = self.website.find({})
+            cursor = self.collection.find({})
             with open('website_data.json', 'w') as file:
-                json.dump(json.loads(dumps(cursor)), file)
+                result = json.loads(dumps(cursor))
+                json.dump(result, file)
             print('Dump succeed!')
+            return result
 
         except Exception as err:
             logging.debug('db dump_db() func error: ', err)

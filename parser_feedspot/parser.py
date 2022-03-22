@@ -112,6 +112,7 @@ class ParserFeedspot:
 
             if '/category/' in element:
                 self.crawl_list_dirs(element)
+                sleep(randint(2, 4))
             else:
                 data = self.scrape_websites(element)
 
@@ -123,8 +124,6 @@ class ParserFeedspot:
 
                 # return scraped data to send it to db
                 yield data
-
-            sleep(randint(2, 4))
 
 
 if __name__ == "__main__":
