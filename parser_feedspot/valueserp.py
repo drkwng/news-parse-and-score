@@ -45,13 +45,15 @@ class SerpAPI:
     def worker(self, _data, _query):
         """
         :param _data: JSON dump from database
-        :type _data: dict
+        :type _data: list
         :param _query: keyword
         :type _query: str
         :return: Dict element with serp data
         :rtype: generator
         """
-        self.q.put(_data)
+        # Fill the queue
+        for elem in _data:
+            self.q.put(elem)
 
         while not self.q.empty():
             element = self.q.get()
@@ -59,7 +61,7 @@ class SerpAPI:
             serp_data = self.get_search_data(
                 f'site:{website} {_query}')
             element['serp_data'] = {
-                query: serp_data
+                _query: serp_data['news_results']
             }
             print(f'{website} - checked')
             # Return scraped data to send it to db
@@ -71,14 +73,14 @@ if __name__ == "__main__":
     search_type = 'news'
     location = 'United States'
 
-    data = {
+    data = [{
         "_id": {"$oid": "6239a9a6a51aec6e8d8d1462"},
         "name": "CNN - Breaking News, Latest News and Videos",
         "website": "https://us.cnn.com/",
         "geo": "US",
         "cat_seen": "USA",
         "available": True
-    }
+    }]
     query = 'ukraine'
 
     init_api = SerpAPI(api_key, search_type, location)

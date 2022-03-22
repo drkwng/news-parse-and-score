@@ -11,9 +11,9 @@ class MongoConnect:
         db = client[database]
         self.collection = db[collection]
 
-    def send_to_db(self, data):
+    def insert_one(self, data):
         """
-        Insert new data into MongoDB collection
+        Insert new data into MongoDB collection one by one
         :param data:
         :type data: dict
         :return:
@@ -25,7 +25,7 @@ class MongoConnect:
         except Exception as err:
             logging.debug('db send_to_db() func error: ', err)
 
-    def dump_db(self):
+    def dump_db(self, dump_file='yes'):
         """
         Makes JSON dump of MongoDB collection
         :return:
@@ -33,10 +33,16 @@ class MongoConnect:
         """
         try:
             cursor = self.collection.find({})
-            with open('website_data.json', 'w') as file:
+            if dump_file == 'yes':
+                with open('website_data.json', 'w') as file:
+                    result = json.loads(dumps(cursor))
+                    json.dump(result, file)
+                print('Dump succeed!')
+            elif dump_file == 'no':
                 result = json.loads(dumps(cursor))
-                json.dump(result, file)
-            print('Dump succeed!')
+            else:
+                assert ValueError
+                result = None
             return result
 
         except Exception as err:
@@ -52,4 +58,18 @@ class MongoConnect:
         """
         for data in cor:
             for elem in data:
-                self.send_to_db(elem)
+                self.insert_one(elem)
+
+    def insert_many(self, dict_data):
+        """
+        Gets list of dicts and send it to MongoDB (Bulk)
+        :param dict_data:
+        :type dict_data: list
+        :return:
+        :rtype:
+        """
+        try:
+            self.collection.insert_many(dict_data)
+
+        except Exception as err:
+            logging.debug('db send_to_db() func error: ', err)
