@@ -25,7 +25,7 @@ class MongoConnect:
         except Exception as err:
             logging.debug('db send_to_db() func error: ', err)
 
-    def dump_db(self, dump_file='yes'):
+    def dump_db(self, dump_file='yes', filename='website_data.json'):
         """
         Makes JSON dump of MongoDB collection
         :return:
@@ -34,7 +34,7 @@ class MongoConnect:
         try:
             cursor = self.collection.find({})
             if dump_file == 'yes':
-                with open('website_data.json', 'w') as file:
+                with open(filename, 'w') as file:
                     result = json.loads(dumps(cursor))
                     json.dump(result, file)
                 print('Dump succeed!')

@@ -122,10 +122,10 @@ class ParserFeedspot:
                 data = self.scrape_websites(element)
 
                 # Check availability of websites
-                # with ThreadPoolExecutor(max_workers=30) as executor:
-                #     for item in data:
-                #         item['available'] = executor.submit(self.check_avail_website,
-                #                                             item['website']).result()
+                with ThreadPoolExecutor(max_workers=30) as executor:
+                    for item in data:
+                        item['available'] = executor.submit(self.check_avail_website,
+                                                            item['website']).result()
                 # return scraped data to send it to db
                 yield data
 

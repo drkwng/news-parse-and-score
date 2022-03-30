@@ -2,7 +2,11 @@
 # TODO: get check avail website and add to db
 
 import json
+
+from concurrent.futures import ThreadPoolExecutor
+
 from db_conn.db import MongoConnect
+from parser_feedspot.parser import ParserFeedspot
 
 
 def modify_cat_seen(data):
@@ -14,18 +18,17 @@ def modify_cat_seen(data):
     :return:
     :rtype:
     """
-
     # Merge not unique websites cat_seen values by website URL into dict
     final_data = {}
     for elem in data:
-        if elem not in final_data.keys():
-            final_data[elem] = {
+        if elem['website'] not in final_data.keys():
+            final_data[elem['website']] = {
                 'name': elem['name'],
-                'geo': [elem['geo']],
-                'cat_seen': elem['cat_seen']
+                'geo': elem['geo'],
+                'cat_seen': [elem['cat_seen']]
             }
         else:
-            final_data[elem]['cat_seen'].append(elem['cat_seen'])
+            final_data[elem['website']]['cat_seen'].append(elem['cat_seen'])
 
     # Make a list of dicts
     result = []
@@ -51,12 +54,22 @@ if __name__ == "__main__":
     db_connect = MongoConnect(host, port, db, collection)
     # db_connect.dump_db()
 
-    # db_connect2.insert_many(MY_JSON)
-
     dump_file = 'website_data.json'
     with open(dump_file) as f:
         data = json.load(f)
 
-    # TODO: Запустить функцию препроцессинга и записать в базу
-    #  После делаем запись в базу отдельную (уники)
-    # TODO: Проверяем доступность сайтов и пишем в базу
+    # Check website availability
+    prepro_data = modify_cat_seen(data)
+    print(f'Websites left: {len(prepro_data)} of {len(data)}')
+
+    parser = ParserFeedspot()
+    print('Start checking websites availability. Please, wait...')
+    with ThreadPoolExecutor(max_workers=100) as executor:
+        for item in prepro_data:
+            item['available'] = executor.submit(parser.check_avail_website,
+                                                item['website']).result()
+            print(f"{item['website']} checked")
+
+    # Add received data to the DB and dump into JSON
+    db_connect.insert_many(prepro_data)
+    db_connect.dump_db(filename='website_data_final.json')
