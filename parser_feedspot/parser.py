@@ -55,19 +55,24 @@ class ParserFeedspot:
             with Session() as session:
                 response = session.get(url, headers=self.ua)
                 html_code = response.content
-                tree = etree.HTML(html_code)
 
+            tree = etree.HTML(html_code)
             dir_name = tree.xpath("//h2[@id='fsbhead']/text()")[0].strip(' News Websites')
 
-            data = []
-
             dir_list = tree.xpath("//*[contains(@class, 'trow-wrap')]")
+
+            data = []
             for num, elem in enumerate(dir_list):
                 # Check on empty elements (hidden)
                 if len(elem.xpath(f"(//a[@class='tlink']/text())[{num-1}]")) > 0:
-                    name = elem.xpath(f"(//a[@class='tlink']/text())[{num-1}]")[0]
-                    website = elem.xpath(f"(//a[@class='ext']/@href)[{num-1}]")[0]
-                    geo = elem.xpath(f"(//span[@class='location_new']/text())[{num-1}]")[0]
+                    name = elem.xpath(f"(//a[@class='tlink']/text())[{num-1}]")[0].strip()
+                    website = elem.xpath(f"(//a[@class='ext']/@href)[{num-1}]")[0].strip()
+                    # geo = elem.xpath(f"(//span[@class='location_new']/text())[{num-1}]")[0].strip()
+                    geo_tag = elem.cssselect('span.location_new')
+                    if len(geo_tag) > 0:
+                        geo = geo_tag[0].text
+                    else:
+                        geo = ''
 
                     data.append(
                         {
@@ -112,16 +117,15 @@ class ParserFeedspot:
 
             if '/category/' in element:
                 self.crawl_list_dirs(element)
-                sleep(randint(2, 4))
+                sleep(randint(1, 3))
             else:
                 data = self.scrape_websites(element)
 
                 # Check availability of websites
-                with ThreadPoolExecutor(max_workers=30) as executor:
-                    for item in data:
-                        item['available'] = executor.submit(self.check_avail_website,
-                                                            item['website']).result()
-
+                # with ThreadPoolExecutor(max_workers=30) as executor:
+                #     for item in data:
+                #         item['available'] = executor.submit(self.check_avail_website,
+                #                                             item['website']).result()
                 # return scraped data to send it to db
                 yield data
 
@@ -129,7 +133,7 @@ class ParserFeedspot:
 if __name__ == "__main__":
     logging.basicConfig(filename='logs.log', filemode='w', level=logging.DEBUG)
 
-    start_url = "https://blog.feedspot.com/category/usa-news-websites/"
+    start_url = "https://blog.feedspot.com/category/california-news-websites/?_src=categorypage"
 
     parser = ParserFeedspot()
     print([work for work in parser.worker(start_url)])
