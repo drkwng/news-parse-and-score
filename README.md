@@ -2,7 +2,7 @@
 
 ###### Made by @dkrwng ([GitHub](https://github.com/drkwng) | [Fiverr](https://www.fiverr.com/drkwng))
 
-##Deploy
+## Deploy
 1. Install Docker:
 `sudo apt-get update`
 `sudo apt install docker.io`
@@ -17,7 +17,7 @@
 - SERP_API (put your [VALUE SERP](https://www.valueserp.com/) API KEY)
 6. Make `run.sh` in web_app folder executable: `sudo chmod +x run.sh`
 7. Build Docker containers: `sudo docker-compose build`
-8. Start website: `sudo docker-compose -d up`
+8. Start website: `sudo docker-compose up -d`
 9. Enter web_app container: `sudo docker exec -it <container_id> /bin/sh`
 To get <container_id> type in terminal: `sudo docker ps`
 10. Create superuser (while being in the web_app docker container): `python manage.py createsuperuser`
