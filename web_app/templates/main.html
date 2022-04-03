@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="container">
+    <div class="text-center mt-5">
+        <h1>Search Topics</h1>
+        <p class="lead">Select a search query to get websites list with SERP Data and scores</p>
+        {% for query in queries %}
+        <a href="{% url 'query_cat' query.pk %}">{{ query.query }} ({{ query.location }})</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

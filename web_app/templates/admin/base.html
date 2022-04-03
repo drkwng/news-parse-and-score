@@ -1,0 +1,34 @@
+{% extends 'admin/base.html' %}
+
+
+{% block extrahead %}{{ block.super }}
+<style>
+table#result_list .field-url, table#result_list .field-notes > textarea {
+    overflow-wrap: break-word;
+    max-width: 150px;
+}
+.field-format_serp > .item {
+    margin: 0 0 1em;
+    font-size:.8em;
+}
+.field-format_serp *[class^='item_'] {
+    display:block;
+    font-style:italic;
+    color:#373737;
+}
+.field-format_serp .item_title {
+    color:#900;
+    font-style:normal;
+    font-size:1.1em;
+}
+</style>
+{% endblock %}
+
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        Score Websites By SERP Data Tool
+    </a>
+</h1>
+{% endblock branding %}

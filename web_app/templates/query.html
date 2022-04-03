@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="container">
+    <div class="text-center mt-5">
+        <h1>Topic: {{ object.query | title }}</h1>
+    </div>
+
+    {% for object in page_obj %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-flex flex-column flex-lg-row">
+          <div class="row flex-fill">
+            <div class="col-sm-5">
+              <div class="h5">
+                  <a href="{{ object.website.url }}" target="_blank">{{ object.website.name }}</a>
+              </div>
+              <span class="badge bg-secondary">{{ object.date_check }}</span>
+              <span class="badge bg-secondary">{{ object.query.location }}</span>
+            </div>
+            <div class="col-sm-4 py-2">
+              Score: <span class="badge bg-success">{{ object.score }}</span>
+            </div>
+<!--            <div class="col-sm-3 text-lg-end">-->
+<!--              <a href="#" class="btn btn-primary stretched-link">SHOW SERP</a>-->
+<!--            </div>-->
+          </div>
+        </div>
+        <div style="display:none;">
+            {{ object.serp_data | safe }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% include 'partials/pagination.html' %}
+{% endblock content %}

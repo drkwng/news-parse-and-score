@@ -1,14 +1,39 @@
-# US News Website Parser + Google News SERP Data Extract
+# Website Score Tool + SERP Parser
 
-1. The program parses blog.feedspot.com catalog and scrapes websites directory data and adds data into MongoDB. 
-2. Then the program checks the response HTTP status code of each website and ads data into MongoDB.
-3. Next, the program gets SERP data on each website by certain keyword (e.g. "ukraine", input in terminal) 
-via [Value SERP API](https://www.valueserp.com/docs/search-api/searches/common). The program will send requests to API only for "'available': True" marked websites.
-4. Finally, the program writes all scraped data into final MongoDB database (`db_name = news_websites`, `collection = websites_with_serp_data`) and makes JSON dump named `website_data.json` in the program folder.
+###### Made by @dkrwng ([GitHub](https://github.com/drkwng) | [Fiverr](https://www.fiverr.com/drkwng))
 
-## Installation:
-1. Install Python (>3.8.x recommended). Don't forget to tick a PATH option in setup process.
-2. Download and install MongoDB from [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community) for your system.
-3. In terminal type: `pip install -r requirements.txt`
-4. Run program. In terminal: `python main.py` or `python3 main.py`.
-5. Follow instructions in terminal and wait.
+##Deploy
+1. Install Docker:
+`sudo apt-get update`
+`sudo apt install docker.io`
+`systemctl enable docker`
+2. Clone the Git repo: https://github.com/drkwng/news-parse-and-score.git
+3. Install docker-compose:
+`sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose`
+4. Apply executable permissons to the binary: `sudo chmod +x /usr/local/bin/docker-compose`
+5. Create `.env` file in the root folder (just copy `.sample-env`). Change these vars values in file:
+- POSTGRES_PASSWORD
+- SECRET_KEY (you can generate it [here](https://djecrety.ir/))
+- SERP_API (put your [VALUE SERP](https://www.valueserp.com/) API KEY)
+6. Make `run.sh` in web_app folder executable: `sudo chmod +x run.sh`
+7. Build Docker containers: `sudo docker-compose build`
+8. Start website: `sudo docker-compose -d up`
+9. Enter web_app container: `sudo docker exec -it <container_id> /bin/sh`
+To get <container_id> type in terminal: `sudo docker ps`
+10. Create superuser (while being in the web_app docker container): `python manage.py createsuperuser`
+11. Load dump data: `python manage.py loaddump`
+
+___________________________________
+
+## How to use
+
+1. Go to `/admin` URL and Sign In.
+2. In "Queries" add your search query and location.
+3. Then select the query (checkbox), choose "Get SERP Data" in dropdown on the top of the page and press "Go".
+4. The parser will make requests to all websites with available=True param in "Websites" catalogue.
+You can re-check available website status by selecting it in checkbox and choosing "Check website available status" in dropdown on the top of the page.
+5. In "Query Check" you can score websites (1-10) and make notes lean on SERP Data by the search query. Filter by query and date will help you be more efficient. 
+6. Website name, URL, score and some other data you can also see on website frontend by clicking a certain query on Homepage.
+
+
+By @dkrwng ([GitHub](https://github.com/drkwng) | [Fiverr](https://www.fiverr.com/drkwng))

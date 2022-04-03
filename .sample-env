@@ -1,0 +1,11 @@
+POSTGRES_DB=supernews_db
+POSTGRES_USER=supernews_user
+POSTGRES_PASSWORD=supernews_pass
+SECRET_KEY=GENERATE_KEY
+
+SERP_API=YOUR_VALUE_SERP_API_KEY
+
+DEBUG=0
+
+EMAIL_USER=email@email.com
+EMAIL_PASS=pass
