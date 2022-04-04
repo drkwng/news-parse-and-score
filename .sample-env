@@ -1,9 +1,9 @@
 SQL_ENGINE=django.db.backends.postgresql_psycopg2
-POSTGRES_NAME=supernews_db
+POSTGRES_DB=supernews_db
 POSTGRES_USER=supernews_user
 POSTGRES_PASSWORD=supernews_pass
-SQL_HOST=db
-SQL_PORT=5432
+POSTGRES_HOST=db
+POSTGRES_PORT=5432
 
 SECRET_KEY=GENERATE_KEY
 
