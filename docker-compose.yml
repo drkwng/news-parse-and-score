@@ -26,10 +26,10 @@ services:
     restart: always
 
   db:
-    image: postgres
+    image: postgres:latest
     env_file: ./.env
     ports:
-      - "5455:5432"
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

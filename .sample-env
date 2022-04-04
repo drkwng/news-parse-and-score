@@ -1,6 +1,10 @@
-POSTGRES_DB=supernews_db
-POSTGRES_USER=supernews_user
-POSTGRES_PASSWORD=supernews_pass
+SQL_ENGINE=django.db.backends.postgresql_psycopg2
+SQL_DATABASE=supernews_db
+SQL_USER=supernews_user
+SQL_PASSWORD=supernews_pass
+SQL_HOST=db
+SQL_PORT=5432
+
 SECRET_KEY=GENERATE_KEY
 
 SERP_API=YOUR_VALUE_SERP_API_KEY
