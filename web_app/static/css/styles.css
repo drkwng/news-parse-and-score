@@ -6612,7 +6612,7 @@ textarea.form-control-lg {
 }
 
 .stretched-link::after {
-  position: absolute;
+  /*position: absolute;*/
   top: 0;
   right: 0;
   bottom: 0;
@@ -7972,6 +7972,12 @@ textarea.form-control-lg {
 .invisible {
   visibility: hidden !important;
 }
+
+.spoiler {display: none; width: 100%; margin: 20px auto 0; color: gray;}
+.spoiler .item {margin-bottom: 20px; border-bottom: 1px dashed gray;}
+.spoiler span {display: block;margin-bottom: 10px;}
+.spoiler .item_title {font-weight: 700;}
+.spoiler .item_time {margin-bottom: 20px}
 
 @media (min-width: 576px) {
   .float-sm-start {

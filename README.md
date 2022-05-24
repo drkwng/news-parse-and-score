@@ -10,8 +10,8 @@
 2. Clone the Git repo: https://github.com/drkwng/news-parse-and-score.git
 3. Install docker-compose:
 `sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose`
-4. Apply executable permissons to the binary: `sudo chmod +x /usr/local/bin/docker-compose`
-5. Create `.env` file in the root folder (just copy `.sample-env`). Change these vars values in file:
+4. Make the binary executable: `sudo chmod +x /usr/local/bin/docker-compose`
+5. Create `.env` file in the root folder (just copy `cp ./.sample-env ./.env`). Change these vars values in file:
 - POSTGRES_PASSWORD
 - SECRET_KEY (you can generate it [here](https://djecrety.ir/))
 - SERP_API (put your [VALUE SERP](https://www.valueserp.com/) API KEY)

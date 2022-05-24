@@ -17,7 +17,7 @@ class QueryView(ListView, SingleObjectMixin):
     model = QueryCheck
     template_name = 'query.html'
     ordering = '-date_check'
-    paginate_by = 100
+    paginate_by = 5
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object(queryset=Query.objects.filter(pk=kwargs['pk']))

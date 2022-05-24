@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
 <div class="container">
     <div class="text-center mt-5">
@@ -19,21 +18,32 @@
               <span class="badge bg-secondary">{{ object.date_check }}</span>
               <span class="badge bg-secondary">{{ object.query.location }}</span>
             </div>
-            <div class="col-sm-4 py-2">
+            <div class="col-sm-3 py-2">
               Score: <span class="badge bg-success">{{ object.score }}</span>
             </div>
-<!--            <div class="col-sm-3 text-lg-end">-->
-<!--              <a href="#" class="btn btn-primary stretched-link">SHOW SERP</a>-->
-<!--            </div>-->
+            <div class="col-sm-3">
+              <a class="btn btn-primary stretched-link spoilerBtn"
+                 href="{{ object.website.id }}">SHOW SERP</a>
+            </div>
+            <div id="{{ object.website.id }}" class="spoiler">
+                {{ object.serp_data | safe }}
+            </div>
           </div>
         </div>
+        {% if object.notes %}
+        <div>
+            <b>Note:</b> <i>{{ object.notes }}</i>
+        </div>
+        {% endif %}
         <div style="display:none;">
-            {{ object.serp_data | safe }}
+          {{ object.serp_data | safe }}
         </div>
       </div>
     </div>
     {% endfor %}
 
 </div>
+
 {% include 'partials/pagination.html' %}
+
 {% endblock content %}
